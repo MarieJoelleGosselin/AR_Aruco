@@ -31,10 +31,10 @@ if __name__ == '__main__':
 
     print("trying to access the webcam")
     cv2.namedWindow("AR webcam")
-    vc = cv2.VideoCapture(0) #put 0 for internal webcam, 1 for externaL
+    vc = cv2.VideoCapture(1) #put 0 for internal webcam, 1 for externaL
     assert vc.isOpened(), "couldn't access the webcam"
     
-    arduino = serial.Serial('/dev/cu.usbserial-14140', baudrate=19200)  
+    arduino = serial.Serial('COM3', baudrate=19200)  
     assert arduino.isOpen(), "couldn't acces the arduino"
 
     h,w = marker.shape
@@ -105,13 +105,9 @@ if __name__ == '__main__':
                 prev_change = time.time()
             
         if ( current_ar_model == 0):
-            obj = three_d_object('data/3d_objects/LibertStatue.obj', 'data/3d_objects/Liberty-GreenBronze-1.png', False, (20, 100, 50))
-            scale = 1000         
-          
-            #obj = three_d_object('data/3d_objects/stanford-bunny.obj', 'data/3d_objects/negx.png', False, (0, 200, 200))            
-            #scale = 5000   
-
-            #print('selected l(iberty)')            
+            obj = three_d_object('data/3d_objects/Water Tower Scanline.obj', 'data/Liberty-GreenBronze-1.png', True, (100, 100, 100))  
+            scale = 30
+            # print('pressed t(ower)')           
         elif current_ar_model == 1:                
             obj = three_d_object('data/3d_objects/Ginger_Bread_Cookies_OBJ.obj', 'data/3d_objects/Ginger_Bread Cookies_BaseColor.png', False, (100, 100, 200))
             scale = 3000            
@@ -139,11 +135,14 @@ if __name__ == '__main__':
             augmented = np.flip(augment(frame, obj, transformation, marker, scale), axis = 1)                
             canvas[:h2 , w: , :] = augmented
 
-        canvas = cv2.resize(canvas, (0,0), fx=0.5, fy=0.5)
+        # canvas = cv2.resize(canvas, (0,0), fx=0.5, fy=0.5)
         cv2.imshow("AR webcam", canvas)
         
         if keyObj == 27: # Escape key to exit
             break
+            vc.release()
+            arduino.end()
+            
         initiating_keystroke = (keyObj == ord(' ')) #spacebar
         
         
